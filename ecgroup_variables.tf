@@ -23,6 +23,8 @@
 # This file defines all the input variables for the ECGroup module.
 # -----------------------------------------------------------------------------
 
+# Global Variables
+
 variable "common_config" {
   description = "A map containing common configuration values like region, VPC, subnet, etc."
   type = object({
@@ -52,6 +54,7 @@ variable "placement_group_name" {
 }
 
 # ECGroup specific variables
+
 variable "instance_type" {
   description = "Instance type for ecgroup node"
   type        = string
