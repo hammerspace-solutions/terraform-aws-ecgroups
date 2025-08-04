@@ -54,9 +54,20 @@ locals {
     []
   )
 
+  # Create some variables needed by template file
+
+  target_user		  = "admin"
+  target_home		  = "/home/${local.target_user}"
+  root_user		  = "root"
+  root_home		  = "/${local.root_user}"
+  
   processed_user_data = var.user_data != "" ? templatefile(var.user_data, {
     SSH_KEYS = join("\n", local.ssh_public_keys),
-    ALLOW_ROOT = var.common_config.allow_root
+    ALLOW_ROOT = var.common_config.allow_root,
+    TARGET_USER = local.target_user,
+    TARGET_HOME = local.target_home,
+    ROOT_USER = local.root_user,
+    ROOT_HOME = local.root_home
   }) : null
 
   resource_prefix = "${var.common_config.project_name}-ecgroup"
