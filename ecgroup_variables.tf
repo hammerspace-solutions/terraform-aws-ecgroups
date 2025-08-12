@@ -129,8 +129,3 @@ variable "storage_ebs_iops" {
   type        = number
   default     = null
 }
-
-variable "user_data" {
-  description = "Path to user data script for ECGroup nodes"
-  type        = string
-}
