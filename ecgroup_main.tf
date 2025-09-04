@@ -66,8 +66,6 @@ locals {
     ALLOW_ROOT = var.common_config.allow_root,
     TARGET_USER = local.target_user,
     TARGET_HOME = local.target_home,
-    ROOT_USER = local.root_user,
-    ROOT_HOME = local.root_home
   })
 
   resource_prefix = "${var.common_config.project_name}-ecgroup"
@@ -108,6 +106,7 @@ resource "aws_instance" "nodes" {
   user_data       = local.processed_user_data
 
   vpc_security_group_ids = [aws_security_group.this.id]
+  iam_instance_profile = var.iam_profile_name
 
   root_block_device {
     volume_size           = var.boot_volume_size
