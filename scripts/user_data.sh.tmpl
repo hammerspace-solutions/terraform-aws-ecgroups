@@ -101,7 +101,7 @@ ensure_ssm_agent() {
   esac
 
   PKG="/tmp/amazon-ssm-agent.deb"
-  URL="https://s3.$REGION.amazonaws.com/amazon-ssm-$REGION/latest/debian_${DEB_ARCH}/amazon-ssm-agent.deb"
+  URL="https://s3.$REGION.amazonaws.com/amazon-ssm-$REGION/latest/debian_$${DEB_ARCH}/amazon-ssm-agent.deb"
   if curl -fsSL "$URL" -o "$PKG"; then
     dpkg -i "$PKG" || apt-get -y -f install
     systemctl enable --now amazon-ssm-agent || true
