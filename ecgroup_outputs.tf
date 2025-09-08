@@ -9,6 +9,19 @@ output "nodes" {
   ]
 }
 
+output "ecgroup_ansible_info" {
+  description = "A list of sensitive details for ecgroup instances"
+  sensitive   = true
+  value = [
+    for i in aws_instance.nodes : {
+      id         = i.id
+      private_ip = i.private_ip
+      name	 = i.tags.Name
+      type	 = "ecgroup"
+    }
+  ]
+}
+
 locals {
   # Raw values in GiB
   metadata_size_gib = var.metadata_ebs_size
