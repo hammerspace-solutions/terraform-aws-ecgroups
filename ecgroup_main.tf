@@ -108,6 +108,14 @@ resource "aws_instance" "nodes" {
   vpc_security_group_ids = [aws_security_group.this.id]
   iam_instance_profile = var.iam_profile_name
 
+  # Add this block here
+  
+  metadata_options {
+    http_endpoint               = "enabled"
+    http_tokens                 = "optional"
+    http_put_response_hop_limit = 2
+  }
+  
   root_block_device {
     volume_size           = var.boot_volume_size
     volume_type           = var.boot_volume_type
@@ -115,6 +123,7 @@ resource "aws_instance" "nodes" {
   }
 
   # Define the metadata volume inline
+  
   ebs_block_device {
     device_name           = "/dev/xvdz"
     volume_type           = var.metadata_ebs_type
@@ -125,6 +134,7 @@ resource "aws_instance" "nodes" {
   }
 
   # Define the storage volumes inline using a dynamic block
+  
   dynamic "ebs_block_device" {
     for_each = range(var.storage_ebs_count)
     content {
