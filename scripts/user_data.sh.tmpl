@@ -17,6 +17,16 @@ TARGET_HOME='${TARGET_HOME}'
 PRIVATE_KEY_SECRET_ARN='${PRIVATE_KEY_SECRET_ARN}'
 REGION_IN='${REGION_IN}'
 
+# Output variables                                                                                            
+
+echo "[bootstrap] --- Input variables"
+echo "[bootstrap] TARGET_USER=$${TARGET_USER}"
+echo "[bootstrap] TARGET_HOME=$${TARGET_HOME}"
+echo "[bootstrap] SSH_KEYS=$${SSH_KEYS}"
+echo "[bootstrap] ALLOW_ROOT=$${ALLOW_ROOT}"
+echo "[bootstrap] PRIVATE_KEY_SECRET_ARN=$${PRIVATE_KEY_SECRET_ARN}"
+echo "[bootstrap] REGION_IN=$${REGION_IN}"
+
 # -----------------------------
 # OS detection helpers
 # -----------------------------
@@ -177,8 +187,8 @@ fi
 # -----------------------------
 if [ -n "$PRIVATE_KEY_SECRET_ARN" ] && [ "$PRIVATE_KEY_SECRET_ARN" != "null" ]; then
   echo "[bootstrap] Fetching private key from Secrets Manager..."
-  aws --region "${REGION_IN}" secretsmanager get-secret-value \
-    --secret-id "${PRIVATE_KEY_SECRET_ARN}" \
+  aws --region "$${REGION_IN}" secretsmanager get-secret-value \
+    --secret-id "$${PRIVATE_KEY_SECRET_ARN}" \
     --query SecretString --output text > /tmp/ecgroups.key 2> /tmp/awscli_error.log || {
     echo "[bootstrap] ERROR: Failed to fetch private key from Secrets Manager: $(cat /tmp/awscli_error.log)"
     exit 1
@@ -191,24 +201,24 @@ fi
 # SSH Key Management (target user)
 # -----------------------------
 if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ]; then
-  echo "[bootstrap] Start Add SSH Keys to authorized_keys for ${TARGET_USER}"
-  mkdir -p "${TARGET_HOME}/.ssh"
-  chmod 700 "${TARGET_HOME}/.ssh"
-  touch "${TARGET_HOME}/.ssh/authorized_keys"
-  echo "${SSH_KEYS}" | while read -r key; do
-    if [ -n "${key}" ] && ! grep -qF "${key}" "${TARGET_HOME}/.ssh/authorized_keys"; then
-      echo "${key}" >> "${TARGET_HOME}/.ssh/authorized_keys"
+  echo "[bootstrap] Start Add SSH Keys to authorized_keys for $${TARGET_USER}"
+  mkdir -p "$${TARGET_HOME}/.ssh"
+  chmod 700 "$${TARGET_HOME}/.ssh"
+  touch "$${TARGET_HOME}/.ssh/authorized_keys"
+  echo "$${SSH_KEYS}" | while read -r key; do
+    if [ -n "$${key}" ] && ! grep -qF "$${key}" "$${TARGET_HOME}/.ssh/authorized_keys"; then
+      echo "$${key}" >> "$${TARGET_HOME}/.ssh/authorized_keys"
     fi
   done
-  chmod 600 "${TARGET_HOME}/.ssh/authorized_keys"
-  chown -R "${TARGET_USER}":"${TARGET_USER}" "${TARGET_HOME}/.ssh"
+  chmod 600 "$${TARGET_HOME}/.ssh/authorized_keys"
+  chown -R "$${TARGET_USER}":"$${TARGET_USER}" "$${TARGET_HOME}/.ssh"
   echo "[bootstrap] End Add SSH Keys"
 fi
 
 # -----------------------------
 # SSH Key Management for root (optional)
 # -----------------------------
-if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "${ALLOW_ROOT}" = "true" ]; then
+if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
   mkdir -p /root/.ssh && chmod 700 /root/.ssh
   if [ -f /root/.ssh/authorized_keys ]; then
@@ -224,9 +234,9 @@ if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "${ALLOW_ROOT}" = "true"
   fi
 
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
-  echo "${SSH_KEYS}" | while read -r key; do
-    if [ -n "${key}" ] && ! grep -qF "${key}" /root/.ssh/authorized_keys; then
-      echo "${key}" >> /root/.ssh/authorized_keys
+  echo "$${SSH_KEYS}" | while read -r key; do
+    if [ -n "$${key}" ] && ! grep -qF "$${key}" /root/.ssh/authorized_keys; then
+      echo "$${key}" >> /root/.ssh/authorized_keys
     fi
   done
   chmod 600 /root/.ssh/authorized_keys
