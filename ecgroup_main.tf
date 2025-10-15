@@ -68,7 +68,7 @@ locals {
     TARGET_USER = local.target_user,
     TARGET_HOME = local.target_home,
     PRIVATE_KEY_SECRET_ARN = local.private_key_arn,
-    REGION = var.common_config.region
+    REGION_IN = var.common_config.region
   })
 
   resource_prefix = "${var.common_config.project_name}-ecgroup"
