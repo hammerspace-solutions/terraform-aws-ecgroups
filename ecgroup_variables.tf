@@ -153,3 +153,8 @@ variable "ansible_sg_id" {
   type        = string
   default     = null
 }
+
+variable "ansible_private_key_secret_arn" {
+  description = "Secrets Manager ARN holding the controller's private key"
+  type        = string
+}
