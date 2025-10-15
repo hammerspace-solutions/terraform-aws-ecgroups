@@ -60,12 +60,15 @@ locals {
   target_home		  = "/home/${local.target_user}"
   root_user		  = "root"
   root_home		  = "/${local.root_user}"
+  private_key_arn	  = var.ansible_private_key_secret_arn
   
   processed_user_data = templatefile("${path.module}/scripts/user_data.sh.tmpl", {
     SSH_KEYS = join("\n", local.ssh_public_keys),
     ALLOW_ROOT = var.common_config.allow_root,
     TARGET_USER = local.target_user,
     TARGET_HOME = local.target_home,
+    PRIVATE_KEY_SECRET_ARN = local.private_key_arn,
+    REGION = var.common_config.region
   })
 
   resource_prefix = "${var.common_config.project_name}-ecgroup"
@@ -102,10 +105,10 @@ resource "aws_instance" "nodes" {
   ami             = var.ami
   instance_type   = var.instance_type
   subnet_id       = var.common_config.subnet_id
-  key_name        = var.common_config.key_name
+  key_name        = var.ansible_key_name # Attach ansible controller's key pair for SSH access
   user_data       = local.processed_user_data
 
-  vpc_security_group_ids = [aws_security_group.this.id]
+  vpc_security_group_ids = [aws_security_group.this.id, var.ansible_sg_id] # Allow SSH from Ansible
   iam_instance_profile = var.iam_profile_name
 
   # Add this block here
