@@ -185,6 +185,9 @@ fi
 # -----------------------------
 # SSH: Fetch private key (Secrets Manager) & set up files
 # -----------------------------
+sudo mkdir -p /etc/ecgroups/keys
+sudo chmod 700 /etc/ecgroups/keys
+
 if [ -n "$PRIVATE_KEY_SECRET_ARN" ] && [ "$PRIVATE_KEY_SECRET_ARN" != "null" ]; then
   echo "[bootstrap] Fetching private key from Secrets Manager..."
   aws --region "$${REGION_IN}" secretsmanager get-secret-value \
@@ -221,16 +224,19 @@ fi
 if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
   mkdir -p /root/.ssh && chmod 700 /root/.ssh
+  touch /root/.ssh/authorized_keys
+
+  # Sanitize authorized_keys: Remove restrictive options and command prefix.
+  # Keep key and comment
+  
   if [ -f /root/.ssh/authorized_keys ]; then
-      PUBLIC_KEY=$(head -1 /root/.ssh/authorized_keys | sed -n 's/.*\(\(ssh-\|ecdsa-\)[^ ]* [^ ]*\).*/\1/p')
-      if [ ! -z "$PUBLIC_KEY" ]; then
-          echo "[bootstrap] ---- Remove no-port-forwarding from root authorized_keys"
-          echo $PUBLIC_KEY > /root/.ssh/authorized_keys.tmp
-          mv /root/.ssh/authorized_keys.tmp /root/.ssh/authorized_keys
-          echo "[bootstrap] Done removing no-port-forwarding"
-      fi
-  else
-      touch /root/.ssh/authorized_keys
+    echo "[bootstrap[ Sanitizing /root/.ssh/authorized_keys to remove no-port-forwarding
+
+# Use sed to remove the prefix up to the key type (ssh-rsa, ssh-ed25519, etc.)
+
+    sed -E 's/^no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="[^"]+" //g' /root/.ssh/authorized_keys > /root/.ssh/authorized_keys.tmp
+    mv /root/.ssh/authorized_keys.tmp /root/.ssh/authorized_keys
+    echo "[bootstrap] Done sanitizing authorized_keys"
   fi
 
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
@@ -239,6 +245,7 @@ if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "$${ALLOW_ROOT}" = "true
       echo "$${key}" >> /root/.ssh/authorized_keys
     fi
   done
+
   chmod 600 /root/.ssh/authorized_keys
   chown -R root:root /root/.ssh
   echo "[bootstrap] Ending SSH Key Management Deployment for root"
@@ -247,6 +254,7 @@ fi
 # -----------------------------
 # Configure SSH settings
 # -----------------------------
+
 echo "[bootstrap] Configuring SSH settings..."
 tee -a /etc/ssh/ssh_config > /dev/null <<'EOF'
 Host *
@@ -260,6 +268,7 @@ PubkeyAuthentication yes
 EOF
 
 # Restart SSH service
+
 if systemctl is-active --quiet sshd; then
   try systemctl restart sshd
 elif systemctl is-active --quiet ssh; then
