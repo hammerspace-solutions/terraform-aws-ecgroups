@@ -221,7 +221,7 @@ fi
 # -----------------------------
 # SSH Key Management for root (optional)
 # -----------------------------
-if [ -n "$SSH_KEYS" ] && [ "$SSH_KEYS" != "null" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
+if [ -n "$${SSH_KEYS}" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
   mkdir -p /root/.ssh && chmod 700 /root/.ssh
   touch /root/.ssh/authorized_keys
