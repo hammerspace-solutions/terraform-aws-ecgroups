@@ -230,7 +230,7 @@ if [ -n "$${SSH_KEYS}" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
   # Keep key and comment
   
   if [ -f /root/.ssh/authorized_keys ]; then
-    echo "[bootstrap[ Sanitizing /root/.ssh/authorized_keys to remove no-port-forwarding
+    echo "[bootstrap[ Sanitizing /root/.ssh/authorized_keys to remove no-port-forwarding"
 
 # Use sed to remove the prefix up to the key type (ssh-rsa, ssh-ed25519, etc.)
 
