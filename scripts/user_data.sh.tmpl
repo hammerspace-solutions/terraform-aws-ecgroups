@@ -234,7 +234,7 @@ if [ -n "$${SSH_KEYS}" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
 
 # Use sed to remove the prefix up to the key type (ssh-rsa, ssh-ed25519, etc.)
 
-    sed -E 's/^no-port-forwarding,no-agent-forwarding,no-X11-forwarding,command="[^"]+" //g' /root/.ssh/authorized_keys > /root/.ssh/authorized_keys.tmp
+    sed -E 's/.*(ssh-|ecdsa-)/\1/g' /root/.ssh/authorized_keys > /root/.ssh/authorized_keys.tmp
     mv /root/.ssh/authorized_keys.tmp /root/.ssh/authorized_keys
     echo "[bootstrap] Done sanitizing authorized_keys"
   fi
