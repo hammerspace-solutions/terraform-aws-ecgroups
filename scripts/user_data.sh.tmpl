@@ -11,7 +11,6 @@ set -euo pipefail
 
 # Terraform-provided variables
 SSH_KEYS='${SSH_KEYS}'
-ALLOW_ROOT='${ALLOW_ROOT}'
 TARGET_USER='${TARGET_USER}'
 TARGET_HOME='${TARGET_HOME}'
 PRIVATE_KEY_SECRET_ARN='${PRIVATE_KEY_SECRET_ARN}'
@@ -23,7 +22,6 @@ echo "[bootstrap] --- Input variables"
 echo "[bootstrap] TARGET_USER=$${TARGET_USER}"
 echo "[bootstrap] TARGET_HOME=$${TARGET_HOME}"
 echo "[bootstrap] SSH_KEYS=$${SSH_KEYS}"
-echo "[bootstrap] ALLOW_ROOT=$${ALLOW_ROOT}"
 echo "[bootstrap] PRIVATE_KEY_SECRET_ARN=$${PRIVATE_KEY_SECRET_ARN}"
 echo "[bootstrap] REGION_IN=$${REGION_IN}"
 
@@ -221,7 +219,7 @@ fi
 # -----------------------------
 # SSH Key Management for root (optional)
 # -----------------------------
-if [ -n "$${SSH_KEYS}" ] && [ "$${ALLOW_ROOT}" = "true" ]; then
+if [ -n "$${SSH_KEYS}" ]; then
   echo "[bootstrap] Starting SSH Key Management Deployment for root"
   mkdir -p /root/.ssh && chmod 700 /root/.ssh
   touch /root/.ssh/authorized_keys

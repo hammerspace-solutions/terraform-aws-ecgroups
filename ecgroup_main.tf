@@ -64,7 +64,6 @@ locals {
   
   processed_user_data = templatefile("${path.module}/scripts/user_data.sh.tmpl", {
     SSH_KEYS = join("\n", local.ssh_public_keys),
-    ALLOW_ROOT = var.common_config.allow_root,
     TARGET_USER = local.target_user,
     TARGET_HOME = local.target_home,
     PRIVATE_KEY_SECRET_ARN = local.private_key_arn,
