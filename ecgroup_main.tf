@@ -82,6 +82,7 @@ resource "aws_security_group" "this" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
+    description = "Ingress to ECGroup Servers for all ports"
     cidr_blocks = var.common_config.allowed_source_cidr_blocks
   }
 
@@ -89,7 +90,8 @@ resource "aws_security_group" "this" {
     from_port   = 0
     to_port     = 0
     protocol    = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    description = "Egress from ECGroup Servers for all ports"
+    cidr_blocks = var.common_config.allowed_source_cidr_blocks
   }
 
   tags = merge(var.common_config.tags, {
